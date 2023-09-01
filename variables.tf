@@ -100,7 +100,7 @@ variable "proxy_protocol_v2" {
 
 variable "addon_cni_version" {
   type        = string
-  description = "VPC CNI Version"
+  description = "CNI Version"
 }
 
 variable "addon_coredns_version" {
