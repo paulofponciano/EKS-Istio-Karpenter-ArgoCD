@@ -17,9 +17,9 @@ instance_type = [
   "t3a.medium"
 ]
 
-desired_size = "1"
-min_size     = "1"
-max_size     = "1"
+desired_size = "2"
+min_size     = "2"
+max_size     = "2"
 
 enabled_cluster_log_types = [
   "api", "audit", "authenticator", "controllerManager", "scheduler"
