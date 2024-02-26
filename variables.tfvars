@@ -9,26 +9,26 @@ az2          = "us-east-2b"
 
 ## CLUSTER OPTIONS
 
-k8s_version = "1.28"
+k8s_version = "1.29"
 
 endpoint_private_access = true
 
 instance_type = [
-  "t3a.medium"
+  "m5.large"
 ]
 
-desired_size = "2"
-min_size     = "2"
-max_size     = "2"
+desired_size = "1"
+min_size     = "1"
+max_size     = "1"
 
 enabled_cluster_log_types = [
   "api", "audit", "authenticator", "controllerManager", "scheduler"
 ]
 
-addon_cni_version       = "v1.15.0-eksbuild.2"
-addon_coredns_version   = "v1.10.1-eksbuild.4"
-addon_kubeproxy_version = "v1.28.2-eksbuild.2"
-addon_csi_version       = "v1.23.0-eksbuild.1"
+addon_csi_version       = "v1.27.0-eksbuild.1"
+addon_cni_version       = "v1.16.2-eksbuild.1"
+addon_coredns_version   = "v1.11.1-eksbuild.6"
+addon_kubeproxy_version = "v1.29.0-eksbuild.3"
 
 ## INGRESS OPTIONS (ISTIO NLB)
 
@@ -36,10 +36,10 @@ nlb_ingress_internal         = "false"
 enable_cross_zone_lb         = "true"
 nlb_ingress_type             = "network"
 proxy_protocol_v2            = "false"
-grafana_virtual_service_host = "grafana.pauloponciano.pro"
-kiali_virtual_service_host   = "kiali.pauloponciano.pro"
-jaeger_virtual_service_host  = "jaeger.pauloponciano.pro"
-argocd_virtual_service_host  = "argocd.pauloponciano.pro"
+grafana_virtual_service_host = "grafana.pauloponciano.digital"
+kiali_virtual_service_host   = "kiali.pauloponciano.digital"
+jaeger_virtual_service_host  = "jaeger.pauloponciano.digital"
+argocd_virtual_service_host  = "argocd.pauloponciano.digital"
 
 ## KARPENTER OPTIONS
 
