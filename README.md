@@ -3,23 +3,43 @@
     # ISTIO-INGRESS
     # ISTIOD
     # ISTIO-BASE
-    # PROMETHEUS, KIALI, GRAFANA, JAEGER, KUBE STATE METRICS
+    # KUBE-PROMETHEUS-STACK
     # ALB INGRESS CONTROLLER
     # METRICS SERVER
     # EKS ADDONS
     # KARPENTER
     # ARGOCD
 
-        # Adicionar ao ConfigMap (argocd-cmd-params-cm)
-        
-          kubectl edit cm argocd-cmd-params-cm -n argocd
-        
-            data:
-              server.insecure: 'true'
+## ArgoCD ConfigMaps
 
-        # Recuperar password ArgoCD
+- Adicionar ao ConfigMap (argocd-cmd-params-cm):
 
-          kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+```sh
+kubectl edit cm argocd-cmd-params-cm -n argocd
+```
+
+```sh
+data:
+  server.insecure: 'true'
+```
+
+- Adicionar ao ConfigMap (argocd-cm):
+
+```sh
+kubectl edit cm argocd-cm -n argocd
+```
+
+```sh
+data:
+  application.resourceTrackingMethod: annotation
+```
+
+- Recuperar password ArgoCD:
+
+```sh
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+```
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
