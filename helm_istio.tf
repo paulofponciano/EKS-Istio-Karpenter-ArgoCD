@@ -5,12 +5,14 @@ resource "helm_release" "istio_base" {
   namespace        = "istio-system"
   create_namespace = true
 
-  version = "1.20.1"
+  version = "1.21.0"
 
   depends_on = [
     aws_eks_cluster.eks_cluster,
     aws_eks_node_group.cluster,
-    kubernetes_config_map.aws-auth
+    kubernetes_config_map.aws-auth,
+    helm_release.karpenter,
+    time_sleep.wait_30_seconds_karpenter
   ]
 }
 
@@ -21,13 +23,15 @@ resource "helm_release" "istiod" {
   namespace        = "istio-system"
   create_namespace = true
 
-  version = "1.20.1"
+  version = "1.21.0"
 
   depends_on = [
     aws_eks_cluster.eks_cluster,
     aws_eks_node_group.cluster,
     kubernetes_config_map.aws-auth,
-    helm_release.istio_base
+    helm_release.istio_base,
+    helm_release.karpenter,
+    time_sleep.wait_30_seconds_karpenter
   ]
 }
 
@@ -38,7 +42,7 @@ resource "helm_release" "istio_ingress" {
   namespace        = "istio-system"
   create_namespace = true
 
-  version = "1.20.1"
+  version = "1.21.0"
 
   set {
     name  = "service.type"
@@ -125,8 +129,16 @@ resource "helm_release" "istio_ingress" {
     aws_eks_node_group.cluster,
     kubernetes_config_map.aws-auth,
     helm_release.istio_base,
-    helm_release.istiod
+    helm_release.istiod,
+    helm_release.karpenter,
+    time_sleep.wait_30_seconds_karpenter
   ]
+}
+
+resource "time_sleep" "wait_30_seconds_albcontroller" {
+  depends_on = [helm_release.alb_ingress_controller]
+
+  create_duration = "30s"
 }
 
 resource "kubectl_manifest" "istio_target_group_binding_http" {
@@ -149,7 +161,11 @@ YAML
     aws_eks_node_group.cluster,
     kubernetes_config_map.aws-auth,
     helm_release.istio_base,
-    helm_release.istiod
+    helm_release.istiod,
+    helm_release.alb_ingress_controller,
+    time_sleep.wait_30_seconds_albcontroller,
+    helm_release.karpenter,
+    time_sleep.wait_30_seconds_karpenter
   ]
 
 }
@@ -173,178 +189,11 @@ YAML
     aws_eks_node_group.cluster,
     kubernetes_config_map.aws-auth,
     helm_release.istio_base,
-    helm_release.istiod
-  ]
-
-}
-
-## ISTIO ADDONS WITH INGRESS
-
-data "kubectl_file_documents" "kiali" {
-  content = file("istio_addons/kiali.yaml")
-}
-
-resource "kubectl_manifest" "kiali" {
-  count              = length(data.kubectl_file_documents.kiali.documents)
-  yaml_body          = element(data.kubectl_file_documents.kiali.documents, count.index)
-  override_namespace = "istio-system"
-
-  depends_on = [
-    helm_release.istio_base,
-    helm_release.istiod
-  ]
-}
-
-data "kubectl_file_documents" "prometheus" {
-  content = file("istio_addons/prometheus.yaml")
-}
-
-resource "kubectl_manifest" "prometheus" {
-  count              = length(data.kubectl_file_documents.prometheus.documents)
-  yaml_body          = element(data.kubectl_file_documents.prometheus.documents, count.index)
-  override_namespace = "istio-system"
-
-  depends_on = [
-    helm_release.istio_base,
-    helm_release.istiod
-  ]
-}
-
-data "kubectl_file_documents" "jaeger" {
-  content = file("istio_addons/jaeger.yaml")
-}
-
-resource "kubectl_manifest" "jaeger" {
-  count              = length(data.kubectl_file_documents.jaeger.documents)
-  yaml_body          = element(data.kubectl_file_documents.jaeger.documents, count.index)
-  override_namespace = "istio-system"
-
-  depends_on = [
-    helm_release.istio_base,
-    helm_release.istiod
-  ]
-}
-
-resource "kubectl_manifest" "kiali_gw" {
-  yaml_body = <<YAML
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: kiali-gateway
-  namespace: istio-system
-spec:
-  selector:
-    istio: ingressgateway 
-  servers:
-  - port:
-      number: 443
-      name: http
-      protocol: HTTP
-    hosts:
-    - ${var.kiali_virtual_service_host}
-YAML
-
-  depends_on = [
-    aws_eks_cluster.eks_cluster,
-    aws_eks_node_group.cluster,
-    kubernetes_config_map.aws-auth,
-    helm_release.istio_base,
-    helm_release.istiod
-  ]
-
-}
-
-resource "kubectl_manifest" "kiali_virtual_service" {
-  yaml_body = <<YAML
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: kiali
-  namespace: istio-system
-spec:
-  hosts:
-  - ${var.kiali_virtual_service_host}
-  gateways:
-  - kiali-gateway
-  http:
-  - match:
-    - uri:
-        prefix: /
-    route:
-    - destination:
-        host: kiali
-        port:
-          number: 20001
-YAML
-
-  depends_on = [
-    aws_eks_cluster.eks_cluster,
-    aws_eks_node_group.cluster,
-    kubernetes_config_map.aws-auth,
-    helm_release.istio_base,
-    helm_release.istiod
-  ]
-
-}
-
-resource "kubectl_manifest" "jaeger_gw" {
-  yaml_body = <<YAML
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: jaeger
-  namespace: istio-system
-spec:
-  selector:
-    istio: ingressgateway 
-  servers:
-  - port:
-      number: 443
-      name: http
-      protocol: HTTP
-    hosts:
-    - ${var.jaeger_virtual_service_host}
-YAML
-
-  depends_on = [
-    aws_eks_cluster.eks_cluster,
-    aws_eks_node_group.cluster,
-    kubernetes_config_map.aws-auth,
-    helm_release.istio_base,
-    helm_release.istiod
-  ]
-
-}
-
-resource "kubectl_manifest" "jaeger_virtual_service" {
-  yaml_body = <<YAML
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: tracing
-  namespace: istio-system
-spec:
-  hosts:
-  - ${var.jaeger_virtual_service_host}
-  gateways:
-  - jaeger
-  http:
-  - match:
-    - uri:
-        prefix: /
-    route:
-    - destination:
-        host: tracing
-        port:
-          number: 80
-YAML
-
-  depends_on = [
-    aws_eks_cluster.eks_cluster,
-    aws_eks_node_group.cluster,
-    kubernetes_config_map.aws-auth,
-    helm_release.istio_base,
-    helm_release.istiod
+    helm_release.istiod,
+    helm_release.alb_ingress_controller,
+    time_sleep.wait_30_seconds_albcontroller,
+    helm_release.karpenter,
+    time_sleep.wait_30_seconds_karpenter
   ]
 
 }
