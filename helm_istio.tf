@@ -135,10 +135,10 @@ resource "helm_release" "istio_ingress" {
   ]
 }
 
-resource "time_sleep" "wait_30_seconds_albcontroller" {
+resource "time_sleep" "wait_40_seconds_albcontroller" {
   depends_on = [helm_release.alb_ingress_controller]
 
-  create_duration = "30s"
+  create_duration = "40s"
 }
 
 resource "kubectl_manifest" "istio_target_group_binding_http" {
@@ -163,7 +163,7 @@ YAML
     helm_release.istio_base,
     helm_release.istiod,
     helm_release.alb_ingress_controller,
-    time_sleep.wait_30_seconds_albcontroller,
+    time_sleep.wait_40_seconds_albcontroller,
     helm_release.karpenter,
     time_sleep.wait_30_seconds_karpenter
   ]
@@ -191,7 +191,7 @@ YAML
     helm_release.istio_base,
     helm_release.istiod,
     helm_release.alb_ingress_controller,
-    time_sleep.wait_30_seconds_albcontroller,
+    time_sleep.wait_40_seconds_albcontroller,
     helm_release.karpenter,
     time_sleep.wait_30_seconds_karpenter
   ]
