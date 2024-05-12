@@ -70,17 +70,17 @@ variable "grafana_virtual_service_host" {
   type = string
 }
 
-variable "kiali_virtual_service_host" {
-  type = string
-}
+# variable "kiali_virtual_service_host" {
+#   type = string
+# }
 
 variable "argocd_virtual_service_host" {
   type = string
 }
 
-variable "jaeger_virtual_service_host" {
-  type = string
-}
+# variable "jaeger_virtual_service_host" {
+#   type = string
+# }
 
 variable "nlb_ingress_internal" {
   type = bool
