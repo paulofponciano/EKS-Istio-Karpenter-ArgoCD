@@ -164,8 +164,6 @@ YAML
     helm_release.istiod,
     helm_release.alb_ingress_controller,
     time_sleep.wait_40_seconds_albcontroller,
-    helm_release.karpenter,
-    time_sleep.wait_30_seconds_karpenter
   ]
 
 }
@@ -192,8 +190,6 @@ YAML
     helm_release.istiod,
     helm_release.alb_ingress_controller,
     time_sleep.wait_40_seconds_albcontroller,
-    helm_release.karpenter,
-    time_sleep.wait_30_seconds_karpenter
   ]
 
 }
