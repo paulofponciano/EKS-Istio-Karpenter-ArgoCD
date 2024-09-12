@@ -128,7 +128,7 @@ resource "aws_route" "public_internet_access" {
 ## NGW
 
 resource "aws_eip" "vpc_iep_1" {
-  vpc = true
+  domain = "vpc"
   tags = {
     Name      = join("-", [var.cluster_name, var.environment, "eip-ngw", var.az1])
     Project   = "${var.project}"
@@ -137,7 +137,7 @@ resource "aws_eip" "vpc_iep_1" {
 }
 
 resource "aws_eip" "vpc_iep_2" {
-  vpc = true
+  domain = "vpc"
   tags = {
     Name      = join("-", [var.cluster_name, var.environment, "eip-ngw", var.az2])
     Project   = "${var.project}"

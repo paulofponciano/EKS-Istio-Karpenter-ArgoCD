@@ -9,12 +9,12 @@ az2          = "us-east-2b"
 
 ## CLUSTER OPTIONS
 
-k8s_version = "1.29"
+k8s_version = "1.30"
 
 endpoint_private_access = true
 
 instance_type = [
-  "m5.large"
+  "t3a.medium"
 ]
 
 desired_size = "1"
@@ -25,10 +25,10 @@ enabled_cluster_log_types = [
   "api", "audit", "authenticator", "controllerManager", "scheduler"
 ]
 
-addon_csi_version       = "v1.29.1-eksbuild.1"
-addon_cni_version       = "v1.17.1-eksbuild.1"
-addon_coredns_version   = "v1.11.1-eksbuild.6"
-addon_kubeproxy_version = "v1.29.1-eksbuild.2"
+addon_csi_version       = "v1.34.0-eksbuild.1"
+addon_cni_version       = "v1.18.3-eksbuild.2"
+addon_coredns_version   = "v1.11.1-eksbuild.11"
+addon_kubeproxy_version = "v1.30.3-eksbuild.2"
 
 ## INGRESS OPTIONS (ISTIO NLB)
 
@@ -36,10 +36,10 @@ nlb_ingress_internal         = "false"
 enable_cross_zone_lb         = "true"
 nlb_ingress_type             = "network"
 proxy_protocol_v2            = "false"
-grafana_virtual_service_host = "grafana.pauloponciano.digital"
-# kiali_virtual_service_host   = "kiali.pauloponciano.digital"
-# jaeger_virtual_service_host  = "jaeger.pauloponciano.digital"
-argocd_virtual_service_host  = "argocd.pauloponciano.digital"
+grafana_virtual_service_host = "grafana.sevira.cloud"
+# kiali_virtual_service_host   = "kiali.sevira.cloud"
+# jaeger_virtual_service_host  = "jaeger.sevira.cloud"
+argocd_virtual_service_host  = "argocd.sevira.cloud"
 
 ## KARPENTER OPTIONS
 

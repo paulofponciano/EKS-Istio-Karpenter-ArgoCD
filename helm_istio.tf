@@ -5,7 +5,7 @@ resource "helm_release" "istio_base" {
   namespace        = "istio-system"
   create_namespace = true
 
-  version = "1.21.0"
+  version = "1.23.0"
 
   depends_on = [
     aws_eks_cluster.eks_cluster,
@@ -23,7 +23,7 @@ resource "helm_release" "istiod" {
   namespace        = "istio-system"
   create_namespace = true
 
-  version = "1.21.0"
+  version = "1.23.0"
 
   depends_on = [
     aws_eks_cluster.eks_cluster,
@@ -42,7 +42,7 @@ resource "helm_release" "istio_ingress" {
   namespace        = "istio-system"
   create_namespace = true
 
-  version = "1.21.0"
+  version = "1.23.0"
 
   set {
     name  = "service.type"

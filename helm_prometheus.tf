@@ -5,7 +5,7 @@ resource "helm_release" "prometheus" {
   namespace        = "prometheus"
   create_namespace = true
 
-  version = "57.2.0"
+  version = "62.3.1"
 
 
   depends_on = [

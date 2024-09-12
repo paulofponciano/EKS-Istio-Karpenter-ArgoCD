@@ -36,13 +36,17 @@ resource "aws_eks_cluster" "eks_cluster" {
     resources = ["secrets"]
   }
 
+  # access_config {
+  #   authentication_mode = "API_AND_CONFIG_MAP"
+  # }
+
   enabled_cluster_log_types = var.enabled_cluster_log_types
 
   tags = {
-    "kubernetes.io/cluster/${var.cluster_name}"     = "shared"
-    "Environment"                                   = "${var.environment}"
-    "Project"                                       = "${var.project}"
-    Terraform                                       = true
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "Environment"                               = "${var.environment}"
+    "Project"                                   = "${var.project}"
+    Terraform                                   = true
   }
 
 }
@@ -73,10 +77,10 @@ resource "aws_eks_node_group" "cluster" {
   }
 
   tags = {
-    "kubernetes.io/cluster/${var.cluster_name}"     = "owned",
-    "Environment"                                   = "${var.environment}"
-    "Project"                                       = "${var.project}"
-    Terraform                                       = true
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned",
+    "Environment"                               = "${var.environment}"
+    "Project"                                   = "${var.project}"
+    Terraform                                   = true
   }
 
   lifecycle {
