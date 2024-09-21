@@ -166,6 +166,11 @@ resource "aws_iam_role_policy_attachment" "cloudwatch" {
   role       = aws_iam_role.eks_nodes_roles.name
 }
 
+resource "aws_iam_role_policy_attachment" "csi_default" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEBSCSIDriverPolicy"
+  role       = aws_iam_role.eks_nodes_roles.name
+}
+
 data "aws_iam_policy_document" "csi_driver" {
   version = "2012-10-17"
 
