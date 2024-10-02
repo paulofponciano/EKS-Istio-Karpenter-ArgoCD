@@ -61,7 +61,7 @@ spec:
   blockDeviceMappings:
     - deviceName: /dev/xvda
       ebs:
-        volumeSize: 30Gi
+        volumeSize: 20Gi
         volumeType: gp3
         iops: 3000
         deleteOnTermination: true
@@ -105,10 +105,11 @@ spec:
         kind: EC2NodeClass
         name: ${var.cluster_name}-default
   limits:
-    cpu: 1000
+    cpu: 50
+    memory: 100Gi
   disruption:
     consolidationPolicy: WhenEmptyOrUnderutilized
-    consolidateAfter: 72h
+    consolidateAfter: 2h
 YAML
 
   depends_on = [

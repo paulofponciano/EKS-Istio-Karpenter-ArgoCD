@@ -7,6 +7,10 @@ resource "helm_release" "prometheus" {
 
   version = "62.3.1"
 
+  values = [
+    "${file("./prometheus/values.yaml")}"
+  ]
+
 
   depends_on = [
     aws_eks_cluster.eks_cluster,
@@ -16,6 +20,38 @@ resource "helm_release" "prometheus" {
     kubectl_manifest.karpenter-nodeclass,
     kubectl_manifest.karpenter-nodepool-default,
     time_sleep.wait_30_seconds_karpenter
+  ]
+}
+
+resource "kubectl_manifest" "prometheus_all_pod_monitor" {
+
+  count = 0
+
+  yaml_body = <<YAML
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: generic-stats-monitor
+  namespace: prometheus
+  labels:
+    monitoring: istio-proxies
+    release: istio
+spec:
+  selector:
+    matchExpressions:
+    - {key: istio-prometheus-ignore, operator: DoesNotExist}
+  namespaceSelector:
+    any: true
+  jobLabel: generic-stats
+  podMetricsEndpoints:
+  - path: /metrics
+    interval: 15s
+    relabelings:
+    - action: keep
+YAML
+
+  depends_on = [
+    helm_release.prometheus
   ]
 }
 
