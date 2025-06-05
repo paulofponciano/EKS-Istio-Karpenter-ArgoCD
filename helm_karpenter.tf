@@ -5,7 +5,7 @@ resource "helm_release" "karpenter" {
   name       = "karpenter"
   repository = "oci://public.ecr.aws/karpenter"
   chart      = "karpenter"
-  version    = "1.0.1"
+  version    = "1.4.0"
 
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
@@ -57,7 +57,7 @@ spec:
         aws:eks:cluster-name: pegasus
   role: role-${var.cluster_name}-${var.environment}-eks-nodes
   amiSelectorTerms:
-    - alias: al2023@v20240828
+    - alias: al2023@v20241225
   blockDeviceMappings:
     - deviceName: /dev/xvda
       ebs:
@@ -69,7 +69,6 @@ spec:
 YAML
 
   depends_on = [
-    kubernetes_config_map.aws-auth,
     helm_release.karpenter,
     time_sleep.wait_30_seconds_karpenter
   ]
@@ -113,7 +112,6 @@ spec:
 YAML
 
   depends_on = [
-    kubernetes_config_map.aws-auth,
     helm_release.karpenter,
     time_sleep.wait_30_seconds_karpenter
   ]

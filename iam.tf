@@ -166,11 +166,6 @@ resource "aws_iam_role_policy_attachment" "cloudwatch" {
   role       = aws_iam_role.eks_nodes_roles.name
 }
 
-resource "aws_iam_role_policy_attachment" "csi_default" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEBSCSIDriverPolicy"
-  role       = aws_iam_role.eks_nodes_roles.name
-}
-
 data "aws_iam_policy_document" "csi_driver" {
   version = "2012-10-17"
 
@@ -210,6 +205,44 @@ resource "aws_iam_policy_attachment" "csi_driver" {
   roles = [aws_iam_role.eks_nodes_roles.name]
 
   policy_arn = aws_iam_policy.csi_driver.arn
+}
+
+data "aws_iam_policy_document" "nodes_volume_create" {
+  version = "2012-10-17"
+
+  statement {
+
+    effect = "Allow"
+    actions = [
+      "ec2:CreateVolume",
+      "ec2:DeleteVolume",
+      "ec2:DetachVolume",
+      "ec2:AttachVolume",
+      "ec2:CreateTags",
+      "ec2:DeleteTags"
+    ]
+
+    resources = [
+      "*"
+    ]
+
+  }
+}
+
+resource "aws_iam_policy" "nodes_volume_create" {
+  name        = join("-", ["policy", var.cluster_name, var.environment, "nodes-volume-create"])
+  path        = "/"
+  description = var.cluster_name
+
+  policy = data.aws_iam_policy_document.nodes_volume_create.json
+}
+
+resource "aws_iam_policy_attachment" "nodes_volume_create" {
+  name = "nodes_volume_create"
+
+  roles = [aws_iam_role.eks_nodes_roles.name]
+
+  policy_arn = aws_iam_policy.nodes_volume_create.arn
 }
 
 ## CLUSTER
@@ -289,6 +322,30 @@ resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller_attach" 
 resource "aws_iam_instance_profile" "karpenter" {
   name = "KarpenterNodeInstanceProfile-${var.cluster_name}"
   role = aws_iam_role.eks_nodes_roles.name
+}
+
+## IAM EKS Access entry
+
+resource "aws_eks_access_entry" "owner" {
+  count         = var.create_cluster_access_entry ? length(var.cluster_role_or_user_arn_access_entry) : 0
+  cluster_name  = aws_eks_cluster.eks_cluster.name
+  principal_arn = var.cluster_role_or_user_arn_access_entry[count.index]
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "AmazonEKSClusterAdminPolicy" {
+  count         = var.create_cluster_access_entry ? length(var.cluster_role_or_user_arn_access_entry) : 0
+  cluster_name  = aws_eks_cluster.eks_cluster.name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  principal_arn = var.cluster_role_or_user_arn_access_entry[count.index]
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [
+    aws_eks_access_entry.owner
+  ]
 }
 
 ## ARGOCD IMAGE UPDATER

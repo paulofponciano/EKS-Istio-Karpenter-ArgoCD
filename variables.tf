@@ -34,6 +34,18 @@ variable "enabled_cluster_log_types" {
   type = list(string)
 }
 
+variable "create_cluster_access_entry" {
+  description = "Flag to indicate whether to create additional IAM access entries for the cluster."
+  type        = bool
+  default     = false
+}
+
+variable "cluster_role_or_user_arn_access_entry" {
+  description = "List of IAM Role or User ARNs to grant cluster access."
+  type        = list(string)
+  default     = ["arn:aws:iam::ACCOUNT_ID:user/USER1"]
+}
+
 variable "endpoint_private_access" {
   type = bool
 }
