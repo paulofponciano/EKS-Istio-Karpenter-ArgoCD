@@ -40,6 +40,7 @@ resource "aws_eks_addon" "kubeproxy" {
 resource "aws_eks_addon" "csi_driver" {
   cluster_name = aws_eks_cluster.eks_cluster.name
   addon_name   = "aws-ebs-csi-driver"
+  service_account_role_arn = aws_iam_role.eks_ebs_csi_driver.arn
 
   addon_version               = var.addon_csi_version
   resolve_conflicts_on_update = "OVERWRITE"

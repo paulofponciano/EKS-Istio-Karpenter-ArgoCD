@@ -104,3 +104,20 @@ resource "aws_autoscaling_group_tag" "tag_name" {
     aws_eks_node_group.cluster
   ]
 }
+
+resource "kubectl_manifest" "standard-storageclass-ebs-csi" {
+  yaml_body = <<YAML
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard
+provisioner: ebs.csi.aws.com
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+YAML
+
+  depends_on = [
+    aws_eks_node_group.cluster,
+    aws_eks_addon.csi_driver
+  ]
+}

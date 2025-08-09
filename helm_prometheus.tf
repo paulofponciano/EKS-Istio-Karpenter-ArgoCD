@@ -5,7 +5,7 @@ resource "helm_release" "prometheus" {
   namespace        = "prometheus"
   create_namespace = true
 
-  version = "62.3.1"
+  version = "75.4.0"
 
   values = [
     "${file("./prometheus/values.yaml")}"
@@ -60,18 +60,18 @@ resource "kubectl_manifest" "grafana_gateway" {
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: grafana
+  name: grafana-gateway
   namespace: prometheus
 spec:
   selector:
-    istio: ingressgateway 
+    istio: ingressgateway
   servers:
-  - port:
-      number: 443
-      name: http
-      protocol: HTTP
-    hosts:
-    - ${var.grafana_virtual_service_host}
+    - hosts:
+        - ${var.grafana_virtual_service_host}
+      port:
+        name: https-workloads
+        number: 443
+        protocol: HTTP
 YAML
 
   depends_on = [
@@ -94,19 +94,17 @@ metadata:
   name: grafana
   namespace: prometheus
 spec:
-  hosts:
-  - ${var.grafana_virtual_service_host}
   gateways:
-  - grafana
+    - grafana-gateway
+  hosts:
+    - ${var.grafana_virtual_service_host}
   http:
-  - match:
-    - uri:
-        prefix: /
-    route:
-    - destination:
-        host: prometheus-grafana
-        port:
-          number: 80
+    - route:
+        - destination:
+            host: prometheus-grafana.prometheus.svc.cluster.local
+            port:
+              number: 80
+          weight: 100
 YAML
 
   depends_on = [

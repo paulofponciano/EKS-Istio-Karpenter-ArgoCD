@@ -9,7 +9,7 @@ az2          = "us-east-2b"
 
 ## CLUSTER OPTIONS
 
-k8s_version = "1.32"
+k8s_version = "1.33"
 
 endpoint_private_access = true
 
@@ -35,13 +35,11 @@ addon_kubeproxy_version = "v1.32.3-eksbuild.2"
 
 ## INGRESS OPTIONS (ISTIO NLB)
 
-nlb_ingress_internal = false
-enable_cross_zone_lb = true
-nlb_ingress_type     = "network"
-proxy_protocol_v2    = false
+nlb_ingress_internal         = false
+enable_cross_zone_lb         = true
+nlb_ingress_type             = "network"
+proxy_protocol_v2            = false
 grafana_virtual_service_host = "grafana.sevira.cloud"
-# kiali_virtual_service_host   = "kiali.sevira.cloud"
-# jaeger_virtual_service_host  = "jaeger.sevira.cloud"
 argocd_virtual_service_host  = "argocd.sevira.cloud"
 
 ## KARPENTER OPTIONS

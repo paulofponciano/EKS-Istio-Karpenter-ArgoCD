@@ -5,7 +5,7 @@ resource "helm_release" "karpenter" {
   name       = "karpenter"
   repository = "oci://public.ecr.aws/karpenter"
   chart      = "karpenter"
-  version    = "1.4.0"
+  version    = "1.5.1"
 
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
@@ -49,6 +49,11 @@ metadata:
   name: ${var.cluster_name}-default
 spec:
   amiFamily: AL2023
+  metadataOptions:
+    httpEndpoint: enabled
+    httpProtocolIPv6: disabled
+    httpPutResponseHopLimit: 2
+    httpTokens: required
   subnetSelectorTerms:
     - tags:
         karpenter.sh/discovery: "true"
@@ -57,7 +62,7 @@ spec:
         aws:eks:cluster-name: pegasus
   role: role-${var.cluster_name}-${var.environment}-eks-nodes
   amiSelectorTerms:
-    - alias: al2023@v20241225
+    - alias: al2023@v20250610
   blockDeviceMappings:
     - deviceName: /dev/xvda
       ebs:

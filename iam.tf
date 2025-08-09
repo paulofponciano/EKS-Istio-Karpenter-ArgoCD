@@ -191,21 +191,46 @@ data "aws_iam_policy_document" "csi_driver" {
 
 }
 
-resource "aws_iam_policy" "csi_driver" {
-  name        = join("-", ["policy", var.cluster_name, var.environment, "csi-driver"])
-  path        = "/"
-  description = var.cluster_name
+data "aws_iam_policy_document" "csi" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
 
-  policy = data.aws_iam_policy_document.csi_driver.json
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.eks.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:sub"
+      values   = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+  }
 }
 
-resource "aws_iam_policy_attachment" "csi_driver" {
-  name = "aws_load_balancer_controller_policy"
+resource "aws_iam_role" "eks_ebs_csi_driver" {
+  name               = "eks-ebs-csi-driver-${var.cluster_name}"
+  assume_role_policy = data.aws_iam_policy_document.csi.json
 
-  roles = [aws_iam_role.eks_nodes_roles.name]
-
-  policy_arn = aws_iam_policy.csi_driver.arn
+  tags = {
+    Environment = var.environment
+    Project     = var.project
+    Terraform   = true
+  }
 }
+
+resource "aws_iam_role_policy_attachment" "amazon_ebs_csi_driver" {
+  role       = aws_iam_role.eks_ebs_csi_driver.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+}
+
 
 data "aws_iam_policy_document" "nodes_volume_create" {
   version = "2012-10-17"
