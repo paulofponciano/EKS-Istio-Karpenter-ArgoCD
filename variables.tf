@@ -78,9 +78,9 @@ variable "karpenter_azs" {
   type = list(any)
 }
 
-# variable "grafana_virtual_service_host" {
-#   type = string
-# }
+variable "grafana_virtual_service_host" {
+  type = string
+}
 
 variable "argocd_virtual_service_host" {
   type = string
