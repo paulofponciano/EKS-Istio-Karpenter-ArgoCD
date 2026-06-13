@@ -29,9 +29,9 @@ create_cluster_access_entry           = false
 cluster_role_or_user_arn_access_entry = ["arn:aws:iam::AWS_ACCOUNT_ID:role/AWS_ROLE_NAME"]
 
 addon_csi_version       = "v1.61.1-eksbuild.1"
-addon_cni_version       = "v1.21.1-eksbuild.8"
-addon_coredns_version   = "v1.14.2-eksbuild.4"
-addon_kubeproxy_version = "v1.36.0-eksbuild.2"
+addon_cni_version       = "v1.22.1-eksbuild.2"
+addon_coredns_version   = "v1.14.3-eksbuild.2"
+addon_kubeproxy_version = "v1.36.0-eksbuild.7"
 
 ## INGRESS OPTIONS (ISTIO NLB)
 
