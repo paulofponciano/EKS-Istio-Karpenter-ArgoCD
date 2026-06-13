@@ -5,7 +5,7 @@ resource "helm_release" "karpenter" {
   name       = "karpenter"
   repository = "oci://public.ecr.aws/karpenter"
   chart      = "karpenter"
-  version    = "1.8.3"
+  version    = "1.12.1"
 
   set = [
     {

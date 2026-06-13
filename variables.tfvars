@@ -9,7 +9,7 @@ az2          = "us-east-2b"
 
 ## CLUSTER OPTIONS
 
-k8s_version = "1.34"
+k8s_version = "1.36"
 
 endpoint_private_access = true
 
@@ -28,10 +28,10 @@ enabled_cluster_log_types = [
 create_cluster_access_entry           = false
 cluster_role_or_user_arn_access_entry = ["arn:aws:iam::AWS_ACCOUNT_ID:role/AWS_ROLE_NAME"]
 
-addon_csi_version       = "v1.53.0-eksbuild.1"
-addon_cni_version       = "v1.20.5-eksbuild.1"
-addon_coredns_version   = "v1.12.4-eksbuild.1"
-addon_kubeproxy_version = "v1.34.1-eksbuild.2"
+addon_csi_version       = "v1.61.1-eksbuild.1"
+addon_cni_version       = "v1.21.1-eksbuild.8"
+addon_coredns_version   = "v1.14.2-eksbuild.4"
+addon_kubeproxy_version = "v1.36.0-eksbuild.2"
 
 ## INGRESS OPTIONS (ISTIO NLB)
 
